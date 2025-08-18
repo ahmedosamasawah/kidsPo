@@ -1,0 +1,22 @@
+[project]
+name = "kids-points"
+version = "0.1.0"
+description = "A family point tracking system with Arabic support."
+authors = [{ name = "Ahmed Osama Al-Sawah", email = "ahmedosamaalsawah@gmail.com" }]
+requires-python = "~=3.12"
+readme = "README.md"
+
+dependencies = [
+    "fastapi>=0.115.14",
+    "rich>=14.0.0",
+    "uvicorn>=0.35.0",
+    "sqlalchemy>=2.0.0",
+    "pydantic>=2.0.0",
+]
+
+[tool.uv]
+package = false
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

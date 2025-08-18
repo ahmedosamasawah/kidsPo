@@ -1,0 +1,37 @@
+{
+  "name": "نظام نقاط الأطفال",
+  "short_name": "نقاط الأطفال",
+  "description": "نظام لتتبع نقاط الأطفال في العائلة",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "nuqayah.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "nuqayah.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["family", "utilities", "productivity"],
+  "shortcuts": [
+    {
+      "name": "عرض العائلة",
+      "short_name": "العائلة",
+      "description": "عرض نقاط الأطفال",
+      "url": "/",
+      "icons": [{ "src": "nuqayah.png", "sizes": "192x192" }]
+    }
+  ]
+}
