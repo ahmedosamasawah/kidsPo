@@ -17,7 +17,7 @@ const vars = {
 
 /** @type {import('vite').UserConfig}*/
 export default {
-    publicDir: is_build ? false : 'public',
+    publicDir: 'public',
     build: {
         reportCompressedSize: false,
         minify: false,
@@ -49,6 +49,13 @@ export default {
                 changeOrigin: true,
                 secure: false,
             },
+        },
+        fs: {
+            allow: ['..'],
+        },
+        headers: {
+            'Cross-Origin-Embedder-Policy': 'require-corp',
+            'Cross-Origin-Opener-Policy': 'same-origin',
         },
     },
     resolve: {

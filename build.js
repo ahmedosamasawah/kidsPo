@@ -1,52 +1,51 @@
-import {writeFileSync as write, readFileSync} from 'fs'
+import {writeFileSync as write, readFileSync, copyFileSync} from 'fs'
 import {minify} from 'terser'
 import {apply_repls} from 'components/src/util.js'
-import {execSync as exec} from 'child_process'
 import pkg from './package.json' with {type: 'json'}
 
 const r = p => readFileSync(p, 'utf8')
 const min_js = (s, conf) => minify(s, {module: true, mangle: {module: true}, compress: {module: true, unsafe: false, global_defs: {'window.__DEBUG__': false}}, format: {comments: false}, ...conf})
 
-// Polyfills
+const BUILD_TIMESTAMP = Date.now()
+
 const pf_url_base = 'https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=4.8.0&features='
 const pf_features = []
 const pf_url = pf_url_base + pf_features.map(pf => pf[0]).join(',')
-const pf_script = `((${pf_features.map(pf => pf[1] || pf[0]).join(' && ')}) || document.write('<script src="${pf_url}"><\\/script>'))`
+// const pf_script = `((${pf_features.map(pf => pf[1] || pf[0]).join(' && ')}) || document.write('<script src="${pf_url}"><\\/script>'))`
 
-// Sentry
-const sentry_url = `https://sentry.nuqayah.com/js-sdk-loader/${pkg.config.sentry_dsn}.min.js`
-const sentry = apply_repls(await (await fetch(sentry_url)).text(), [
-    ['bundle.min.js', 'bundle.replay.min.js'],
-    ['.replayIntegration()', '.replayIntegration({maskAllInputs: false, maskAllText: false})'],
-    [/{(?="dsn":)/, `{"release": "${pkg.version}",`],
-    [/("tracesSampleRate"):1/, '$1:0'],
-]).trim()
+const service_worker = apply_repls(r('public/sw.js'), [
+    ['kids-points-v1', `kids-points-v${BUILD_TIMESTAMP}`],
+    ['static-v1', `static-v${BUILD_TIMESTAMP}`],
+    ['runtime-v1', `runtime-v${BUILD_TIMESTAMP}`],
+])
 
-// Service worker
-// write('dist/sw.js', (await min_js(apply_repls(r('src/util/sw.js'), [
-//     ['$TS$', Date.now()],
-//     ['$POLYFILLS$', pf_url],
-//     ['$SENTRY$', sentry.match(/https:\/\/browser.sentry-cdn.com.*?\.js/)[0]],
-// ]))).code)
+write('dist/sw.js', service_worker)
 
-// Minify
+const pwa_assets = [
+    'manifest.json',
+    'icon-72.png',
+    'icon-96.png',
+    'icon-128.png',
+    'icon-144.png',
+    'icon-152.png',
+    'icon-192.png',
+    'icon-384.png',
+    'icon-512.png'
+]
+
+pwa_assets.forEach(asset => {
+    copyFileSync(`public/${asset}`, `dist/${asset}`)
+})
+
 const {code, map} = await min_js({'bundle.es.js': r('dist/bundle.es.js')}, {sourceMap: {content: r('dist/bundle.es.js.map')}})
 
-// Write bundle and sourcemap
 write('dist/bundle-final.js', code + '\n//# sourceMappingURL=bundle-final.js.map')
 write('dist/bundle-final.js.map', map)
 
-// Upload to sentry
-// exec(`sentry-cli sourcemaps inject -o sentry -p ${pkg.name} -r ${pkg.version} ./dist/bundle-final.js*`, {stdio: 'inherit'})
-// exec(`sentry-cli sourcemaps upload -o sentry -p ${pkg.name} -r ${pkg.version} ./dist/bundle-final.js*`, {stdio: 'inherit'})
-
 const scripts = [
-    // `<script>${sentry};${pf_script}</script>`,
     `<script type=module>${r('dist/bundle-final.js').replace(/\/\/# sourceMappingURL=.*/, '').trim()}</script>`,
-    // `<script defer data-domain="${pkg.config.domain}" src="https://a9s.nuqayah.com/js/script.js"></script>`,
 ]
 
-// Combine
 const pg = apply_repls(r('index.html'), [
     [/\n+ */g, ''], // important for sentry
     [/(?<=<\/title>)/, () => `<style>${r(`dist/${pkg.name}.css`)}</style>`],

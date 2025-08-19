@@ -10,6 +10,7 @@ pre-commit:
 
     check-eof-newline:
       file_types: [text]
+      exclude: "\\.(png|ico|svg)$"
       run: '! rg -q -U "[^\n]\z" {staged_files}'
 
     check-trailing-ws:

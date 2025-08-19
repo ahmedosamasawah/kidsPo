@@ -1,4 +1,6 @@
-<main>
+<OfflineStatus />
+
+<main style="padding-top: {offline_padding}px">
     {#if $session.loaded}
         <svelte:component this={component} {...route.params} params={route.params} />
         {#if is_404}
@@ -9,8 +11,8 @@
         {/if}
     {/if}
 </main>
-<ModeWatcher />
 
+<ModeWatcher />
 <ConfirmDialog />
 
 <script module>
@@ -79,8 +81,14 @@ session.subscribe(navigate_based_on_session)
 import {setContext} from 'svelte'
 
 import ConfirmDialog from './components/shared/ConfirmDialog.svelte'
+import OfflineStatus from './components/shared/OfflineStatus.svelte'
+import {family_store, ui_store} from './stores.svelte.js'
 </script>
 
 <script>
 setContext('router', router)
+
+let offline_padding = $derived(
+    $ui_store.offline_banner_visible || $family_store.is_offline_mode ? 40 : 0,
+)
 </script>
