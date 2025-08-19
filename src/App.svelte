@@ -10,8 +10,8 @@
     {/if}
 </main>
 <ModeWatcher />
+
 <ConfirmDialog />
-<OfflineIndicator />
 
 <script module>
 import {ModeWatcher} from 'mode-watcher'
@@ -79,7 +79,6 @@ session.subscribe(navigate_based_on_session)
 import {setContext} from 'svelte'
 
 import ConfirmDialog from './components/shared/ConfirmDialog.svelte'
-import OfflineIndicator from './components/shared/OfflineIndicator.svelte'
 </script>
 
 <script>

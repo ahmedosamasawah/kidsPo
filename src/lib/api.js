@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.DEV ? '/api' : 'http://localhost:8005/api'
+const API_BASE = '/api'
 
 class ApiError extends Error {
     constructor(message, status, response) {
@@ -24,8 +24,6 @@ async function api_request(endpoint, options = {}) {
         const data = await response.json().catch(() => null)
 
         if (!response.ok) {
-            if (data?.offline) return data
-
             throw new ApiError(
                 data?.detail || `Request failed with status ${response.status}`,
                 response.status,
@@ -36,9 +34,6 @@ async function api_request(endpoint, options = {}) {
         return data
     } catch (error) {
         if (error instanceof ApiError) throw error
-
-        if (!navigator.onLine) throw new ApiError('أنت غير متصل بالإنترنت', 0, {offline: true})
-
         throw new ApiError('Network error', 0, null)
     }
 }

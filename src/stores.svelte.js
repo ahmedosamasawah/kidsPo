@@ -339,8 +339,6 @@ export const family_actions = {
                 batch.note,
             )
 
-            if (result.offline && result.queued) return
-
             family_store.update(state => ({
                 ...state,
                 children: state.children.map(child =>
@@ -361,8 +359,6 @@ export const family_actions = {
                 data: {child_id, delta: batch.total_delta, note: batch.note},
             })
         } catch (error) {
-            if (error.response?.offline) return
-
             family_store.update(state => ({
                 ...state,
                 children: state.children.map(child =>

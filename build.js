@@ -22,13 +22,12 @@ const sentry = apply_repls(await (await fetch(sentry_url)).text(), [
     [/("tracesSampleRate"):1/, '$1:0'],
 ]).trim()
 
-// Service worker and manifest
-write('dist/sw.js', (await min_js(r('sw.js'))).code)
-write('dist/manifest.json', r('public/manifest.json'))
-
-// Copy PWA assets
-exec('cp public/nuqayah.png dist/', {stdio: 'inherit'})
-exec('cp public/icons.svg dist/', {stdio: 'inherit'})
+// Service worker
+// write('dist/sw.js', (await min_js(apply_repls(r('src/util/sw.js'), [
+//     ['$TS$', Date.now()],
+//     ['$POLYFILLS$', pf_url],
+//     ['$SENTRY$', sentry.match(/https:\/\/browser.sentry-cdn.com.*?\.js/)[0]],
+// ]))).code)
 
 // Minify
 const {code, map} = await min_js({'bundle.es.js': r('dist/bundle.es.js')}, {sourceMap: {content: r('dist/bundle.es.js.map')}})
